@@ -35,5 +35,5 @@ class ExamenCreate(ExamenBase):
 class ExamenResponse(ExamenBase):
     IDExamen: int
 
-    class Config:
-        orm_mode = True
+class Config:
+    orm_mode = True
