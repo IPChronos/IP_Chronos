@@ -1,79 +1,24 @@
-# Node modules
-node_modules/
-
-# Build output
-build/
-
-# Local environment variables
-.env
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
-
 # Logs
+logs
+*.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
+lerna-debug.log*
+
+node_modules
+dist
+dist-ssr
+*.local
 
 # Editor directories and files
-.idea/
-.vscode/
-*.swp
-*.swo
-
-# System files
+.vscode/*
+!.vscode/extensions.json
+.idea
 .DS_Store
-Thumbs.db
-
-# Optional npm cache directory
-.npm
-
-# Output from ESLint
-.eslintcache
-
-# Output from Stylelint
-.stylelintcache
-
-# Test coverage reports
-coverage/
-
-# Parcel-bundler cache (if used)
-.cache/
-
-# TypeScript build cache (if using TypeScript)
-*.tsbuildinfo
-
-# Temporary files
-tmp/
-temp/
-
-# MacOS specific files
-._*
-
-# Ignore build output from Vite (if using)
-dist/
-
-# Lerna
-lerna-debug.log
-
-# Storybook build output
-.out/
-storybook-static/
-
-# Yarn Integrity file
-.yarn-integrity
-
-# Ignore Yarn/PNPM lockfiles if using npm (or vice versa)
-yarn.lock
-pnpm-lock.yaml
-
-# Firebase cache
-.firebaserc
-
-# Netlify cache
-.netlify/
-
-# Local generated files
-*.local
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
