@@ -1,6 +1,10 @@
 fastapi
 uvicorn
 sqlalchemy
+<<<<<<< Updated upstream
 pydantic
 passlib[bcrypt]
 python-dotenv
+=======
+psycopg2-binary
+>>>>>>> Stashed changes
