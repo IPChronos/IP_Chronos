@@ -22,7 +22,7 @@ async def login(request: LoginRequest):
     """
     return login_user(request)
 
-# ADD EXAMENES
+# ADD EXAMENE
 @app.post("/adauga_examen")
 async def adauga_examen_endpoint(examen: Examen):
     """
