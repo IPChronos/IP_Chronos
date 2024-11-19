@@ -13,9 +13,12 @@ function Register() {
   };
 
   return (
+
+    
     <div className="min-h-screen bg-gradient-to-r from-green-400 via-teal-500 to-blue-600 flex items-center justify-center">
       <div className="w-full max-w-md p-8 bg-white rounded-2xl shadow-2xl transform transition-all hover:scale-105">
-        <h1 className="text-3xl font-semibold text-center text-gray-800 mb-6">Register</h1>
+      <h1 className="text-4xl font-bold text-center text-gray-900 mb-4">Chronos - Online Exam Planner</h1>
+        <h2 className="text-3xl font-semibold text-center text-gray-800 mb-6">Register</h2>
         <form className="flex flex-col gap-6" onSubmit={handleSubmit}>
           <div>
             <label htmlFor="name" className="block text-sm font-medium text-gray-700">
