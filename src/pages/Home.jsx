@@ -5,7 +5,7 @@ const Home = () => {
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-r from-purple-500 via-indigo-600 to-blue-500 text-white">
       {/* Titlul principal */}
-      <h1 className="text-5xl font-extrabold mb-4 drop-shadow-lg">Welcome to Chronos Planner</h1>
+      <h1 className="text-5xl font-extrabold mb-4 drop-shadow-lg">Welcome to Chronos - Online Exam Planner</h1>
       
       {/* Subtitlu descriptiv */}
       <p className="text-lg text-gray-200 mb-8 max-w-2xl text-center">
