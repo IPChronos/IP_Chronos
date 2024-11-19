@@ -14,13 +14,20 @@ function StudentDashboard() {
   const [scheduledExams, setScheduledExams] = useState([]);
   const [selectedDate, setSelectedDate] = useState(new Date()); // Data selectată în calendar
   const [examDetails, setExamDetails] = useState(null); // Detalii despre examen
-  
+
   // Preluarea examenelor aprobate
   useEffect(() => {
     const fetchExams = async () => {
-      const response = await fetch("https://backend-url/student-exams");
-      const data = await response.json();
-      setScheduledExams(data);
+      // Simulăm un examen fictiv
+      const mockExam = {
+        id: 1,
+        subject: "Analiza matematica",
+        professor: "Prof. Satco Bianca",
+        date: new Date(2024, 11, 5, 9, 0), // 5 Decembrie 2024, 9 AM
+        room: "Amf. RR",
+      };
+      // Adăugăm examenul fictiv la lista de examene
+      setScheduledExams([mockExam]);
     };
     fetchExams();
   }, []);
@@ -78,17 +85,88 @@ function StudentDashboard() {
 
   const facultatiSiSpecializari = {
     // Faculties and specializations data
-    "Facultatea de Inginerie Electrică și Știința Calculatoarelor": ["Calculatoare", "Calculatoare – DUAL", "Electronică Aplicată", "Rețele și software de telecomunicații", "Sisteme electrice", "Sisteme electrice – DUAL", "Energetică și tehnologii informatice", "Managementul energiei", "Automatică şi informatică aplicată", "Automatică şi informatică aplicată - DUAL", "Echipamente și sisteme de comandă și control pentru autovehicule", "Echipamente și sisteme medicale"],
-    "Facultatea de Drept și Științe Administrative": ["Economia comerțului, turismului și serviciilor", "Drept European si International", "Administrație Publică", "Poliție Locală"],
-    "Facultatea de Economie, Administraţie și Afaceri": ["Administrarea afacerilor", "Finanțe și bănci", "Contabilitate și informatică de gestiune", "Management", "Afaceri internaționale", "Informatică economică", "Economie generală și comunicare economică", "Asistență managerială și administrativă", "Matematică informatică"],
-    "Facultatea de Educație Fizică și Sport": ["Educaţie Fizică şi Sport", "Kinetoterapie și motricitate specială"],
-    "Facultatea de Inginerie Alimentară": ["Ingineria produselor alimentare", "Controlul şi expertiza produselor alimentare", "Protecția consumatorului și a mediului"],
-    "Facultatea de Inginerie Mecanică, Autovehicule și Robotică": ["Tehnologia Construcțiilor de Mașini", "Tehnologia Construcțiilor de Mașini – DUAL", "Mecatronică", "Robotică", "Inginerie Mecanică", "Inginerie Mecanică DUAL", "Autovehicule Rutiere"],
-    "Facultatea de Istorie și Geografie": ["Asistență socială", "Geografie", "Geografia turismului", "Istorie", "Relații internaționale și studii europene", "Resurse umane"],
-    "Facultatea de Litere și Științe ale Comunicării": ["Limba şi literatura română – Limbă şi literatură modernă", "Limba şi literatura engleză", "Limba şi literatura franceză", "Limba şi literatura ucrainena", "Media digitala", "Comunicare și relații publice"],
-    "Facultatea de Medicină și Științe Biologice": ["Medicină", "Asistență medicală generală", "Balneofiziokinetoterapie și recuperare", "Biochimie", "Biologie", "Nutriție și dietetică", "Tehnică dentară"],
-    "Facultatea de Silvicultură": ["Silvicultură", "Ecologie si Protectia Mediului"],
-    "Facultatea de Științe ale Educației": ["Pedagogia Invatamantului Primar si Prescolar", "Psihologie"]
+    "Facultatea de Inginerie Electrică și Știința Calculatoarelor": [
+      "Calculatoare",
+      "Calculatoare – DUAL",
+      "Electronică Aplicată",
+      "Rețele și software de telecomunicații",
+      "Sisteme electrice",
+      "Sisteme electrice – DUAL",
+      "Energetică și tehnologii informatice",
+      "Managementul energiei",
+      "Automatică şi informatică aplicată",
+      "Automatică şi informatică aplicată - DUAL",
+      "Echipamente și sisteme de comandă și control pentru autovehicule",
+      "Echipamente și sisteme medicale",
+    ],
+    "Facultatea de Drept și Științe Administrative": [
+      "Economia comerțului, turismului și serviciilor",
+      "Drept European si International",
+      "Administrație Publică",
+      "Poliție Locală",
+    ],
+    "Facultatea de Economie, Administraţie și Afaceri": [
+      "Administrarea afacerilor",
+      "Finanțe și bănci",
+      "Contabilitate și informatică de gestiune",
+      "Management",
+      "Afaceri internaționale",
+      "Informatică economică",
+      "Economie generală și comunicare economică",
+      "Asistență managerială și administrativă",
+      "Matematică informatică",
+    ],
+    "Facultatea de Educație Fizică și Sport": [
+      "Educaţie Fizică şi Sport",
+      "Kinetoterapie și motricitate specială",
+    ],
+    "Facultatea de Inginerie Alimentară": [
+      "Ingineria produselor alimentare",
+      "Controlul şi expertiza produselor alimentare",
+      "Protecția consumatorului și a mediului",
+    ],
+    "Facultatea de Inginerie Mecanică, Autovehicule și Robotică": [
+      "Tehnologia Construcțiilor de Mașini",
+      "Tehnologia Construcțiilor de Mașini – DUAL",
+      "Mecatronică",
+      "Robotică",
+      "Inginerie Mecanică",
+      "Inginerie Mecanică DUAL",
+      "Autovehicule Rutiere",
+    ],
+    "Facultatea de Istorie și Geografie": [
+      "Asistență socială",
+      "Geografie",
+      "Geografia turismului",
+      "Istorie",
+      "Relații internaționale și studii europene",
+      "Resurse umane",
+    ],
+    "Facultatea de Litere și Științe ale Comunicării": [
+      "Limba şi literatura română – Limbă şi literatură modernă",
+      "Limba şi literatura engleză",
+      "Limba şi literatura franceză",
+      "Limba şi literatura ucrainena",
+      "Media digitala",
+      "Comunicare și relații publice",
+    ],
+    "Facultatea de Medicină și Științe Biologice": [
+      "Medicină",
+      "Asistență medicală generală",
+      "Balneofiziokinetoterapie și recuperare",
+      "Biochimie",
+      "Biologie",
+      "Nutriție și dietetică",
+      "Tehnică dentară",
+    ],
+    "Facultatea de Silvicultură": [
+      "Silvicultură",
+      "Ecologie si Protectia Mediului",
+    ],
+    "Facultatea de Științe ale Educației": [
+      "Pedagogia Invatamantului Primar si Prescolar",
+      "Psihologie",
+    ],
   };
 
   // Modificăm valorile setărilor studentului
@@ -113,13 +191,13 @@ function StudentDashboard() {
   return (
     <div className="flex min-h-screen bg-gray-100">
       {/* Sidebar */}
-      <div className="w-64 bg-gradient-to-b from-purple-900 to-purple-700 text-white">
+      <div className="w-64 bg-gradient-to-b from-purple-900 to-purple-700 text-gray">
         <div className="p-4 text-2xl font-semibold">Chronos - Student</div>
         <ul className="mt-8 space-y-4">
           <li
             onClick={() => setCurrentSection("Home")}
             className={`pl-4 py-2 rounded cursor-pointer ${
-              currentSection === "Home" ? "bg-purple-800" : "bg-purple-600"
+              currentSection === "Home" ? "bg-purple-600" : "bg-purple-800"
             }`}
           >
             Home
@@ -127,7 +205,7 @@ function StudentDashboard() {
           <li
             onClick={() => setCurrentSection("Exams")}
             className={`pl-4 py-2 rounded cursor-pointer ${
-              currentSection === "Exams" ? "bg-purple-800" : "bg-purple-600"
+              currentSection === "Exams" ? "bg-purple-600" : "bg-purple-800"
             }`}
           >
             Exams
@@ -135,7 +213,7 @@ function StudentDashboard() {
           <li
             onClick={() => setCurrentSection("Settings")}
             className={`pl-4 py-2 rounded cursor-pointer ${
-              currentSection === "Settings" ? "bg-purple-800" : "bg-purple-600"
+              currentSection === "Settings" ? "bg-purple-600" : "bg-purple-800"
             }`}
           >
             Settings
@@ -160,7 +238,9 @@ function StudentDashboard() {
                         new Date(exam.date).toDateString() ===
                         date.toDateString()
                     );
-                    return hasExam ? "bg-purple-500 text-white rounded-full" : null;
+                    return hasExam
+                      ? "bg-purple-500 text-gray rounded-full"
+                      : null;
                   }}
                 />
               </div>
@@ -170,10 +250,19 @@ function StudentDashboard() {
                 <h2 className="text-xl font-semibold mb-2">Detalii examen</h2>
                 {examDetails ? (
                   <div>
-                    <p><strong>Subject:</strong> {examDetails.subject}</p>
-                    <p><strong>Professor:</strong> {examDetails.professor}</p>
-                    <p><strong>Date:</strong> {new Date(examDetails.date).toLocaleString()}</p>
-                    <p><strong>Room:</strong> {examDetails.room}</p>
+                    <p>
+                      <strong>Subject:</strong> {examDetails.subject}
+                    </p>
+                    <p>
+                      <strong>Professor:</strong> {examDetails.professor}
+                    </p>
+                    <p>
+                      <strong>Date:</strong>{" "}
+                      {new Date(examDetails.date).toLocaleString()}
+                    </p>
+                    <p>
+                      <strong>Room:</strong> {examDetails.room}
+                    </p>
                   </div>
                 ) : (
                   <p>Niciun examen pentru aceasta zi.</p>
@@ -206,53 +295,51 @@ function StudentDashboard() {
           </div>
         )}
 
-{currentSection === "Settings" && (
-          
+        {currentSection === "Settings" && (
           <div>
             <h1 className="text-2xl font-bold mb-4">Settings</h1>
             <p>Actualizeaza-ti profilul aici.</p>
 
             <form className="bg-white p-6 rounded shadow">
+              {/* Nume */}
+              <div className="mb-4">
+                <label className="block mb-1 font-medium">Nume</label>
+                <input
+                  type="text"
+                  name="firstName"
+                  className="w-full p-2 border rounded"
+                  value={studentSettings.firstName}
+                  onChange={handleChange}
+                  placeholder="Introdu numele:"
+                  required
+                />
+              </div>
 
-        {/* Nume */}
-        <div className="mb-4">
-          <label className="block mb-1 font-medium">Nume</label>
-          <input
-            type="text"
-            name="firstName"
-            className="w-full p-2 border rounded"
-            value={studentSettings.firstName}
-            onChange={handleChange}
-            placeholder="Introdu numele:"
-            required
-          />
-        </div>
-
-        {/* Prenume */}
-        <div className="mb-4">
-          <label className="block mb-1 font-medium">Prenume</label>
-          <input
-            type="text"
-            name="lastName"
-            className="w-full p-2 border rounded"
-            value={studentSettings.lastName}
-            onChange={handleChange}
-            placeholder="Introdu prenumele:"
-            required
-          />
-        </div>
-        <div className="mb-4">
-          <label className="block mb-1 font-medium">Email</label>
-          <input
-            type="email"
-            name="email"
-            className="w-full p-2 border rounded"
-            value={studentSettings.email}
-            onChange={handleChange}
-            placeholder="Enter email address"
-          />
-        </div>
-        <div className="mb-4">
+              {/* Prenume */}
+              <div className="mb-4">
+                <label className="block mb-1 font-medium">Prenume</label>
+                <input
+                  type="text"
+                  name="lastName"
+                  className="w-full p-2 border rounded"
+                  value={studentSettings.lastName}
+                  onChange={handleChange}
+                  placeholder="Introdu prenumele:"
+                  required
+                />
+              </div>
+              <div className="mb-4">
+                <label className="block mb-1 font-medium">Email</label>
+                <input
+                  type="email"
+                  name="email"
+                  className="w-full p-2 border rounded"
+                  value={studentSettings.email}
+                  onChange={handleChange}
+                  placeholder="Enter email address"
+                />
+              </div>
+              <div className="mb-4">
                 <label className="block mb-1 font-medium">Telefon</label>
                 <input
                   type="tel"
@@ -264,8 +351,6 @@ function StudentDashboard() {
                 />
               </div>
 
-        
-              
               <div className="mb-4">
                 <label className="block mb-1 font-medium">Facultatea</label>
                 <select
@@ -297,11 +382,13 @@ function StudentDashboard() {
                 >
                   <option value="">Alege specializarea</option>
                   {studentSettings.faculty &&
-                    facultatiSiSpecializari[studentSettings.faculty].map((specialization, index) => (
-                      <option key={index} value={specialization}>
-                        {specialization}
-                      </option>
-                    ))}
+                    facultatiSiSpecializari[studentSettings.faculty].map(
+                      (specialization, index) => (
+                        <option key={index} value={specialization}>
+                          {specialization}
+                        </option>
+                      )
+                    )}
                 </select>
               </div>
 
@@ -318,8 +405,7 @@ function StudentDashboard() {
                   placeholder="Enter group"
                 />
               </div>
-            
-              
+
               <div className="mb-4">
                 <label className="block mb-1 font-medium">Parola</label>
                 <input
