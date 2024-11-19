@@ -1,0 +1,59 @@
+[
+    {
+      "id": 1,
+      "subject": "Matematici Speciale",
+      "professor": "Prof. Satco Bianca",
+      "date": "2024-12-01T10:00:00",
+      "room": "Amf. DH",
+      "group": "3111"
+    },
+    {
+      "id": 2,
+      "subject": "Fizică",
+      "professor": "Prof. Diaconu Andrei",
+      "date": "2024-12-02T14:00:00",
+      "room": "Amf. DH",
+      "group": "3112"
+    },
+    {
+      "id": 3,
+      "subject": "PCLP1",
+      "professor": "Prof. Prodan Remus",
+      "date": "2024-12-03T09:00:00",
+      "room": "C102",
+      "group": "3111"
+    },
+    {
+      "id": 4,
+      "subject": "Proiectare logica",
+      "professor": "Prof. Potorac Alin",
+      "date": "2024-12-04T13:00:00",
+      "room": "Amf. RR",
+      "group": "3112"
+    },
+    {
+      "id": 5,
+      "subject": "Grafica asistata de calculator",
+      "professor": "Prof. Mahalu George",
+      "date": "2024-12-05T08:00:00",
+      "room": "Amf. RR",
+      "group": "3111"
+    },
+    {
+      "id": 6,
+      "subject": "Grafica asistata de calculator",
+      "professor": "Prof. Mahalu George",
+      "date": "2024-12-06T10:00:00",
+      "room": "Amf. RR",
+      "group": "3112"
+    },
+    {
+      "id": 7,
+      "subject": "Grafica asistata de calculator",
+      "professor": "Prof. Mahalu George",
+      "date": "2024-12-07T15:00:00",
+      "room": "Amf. RR",
+      "group": "3113"
+    }
+  ]
+  
