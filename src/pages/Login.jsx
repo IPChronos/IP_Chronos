@@ -12,8 +12,8 @@ function Login() {
     e.preventDefault();
 
     
-
-    const response = await fetch("`${API_BASE_URL}/login`", {
+    try{
+    const response = await fetch("http://127.0.0.1:8000/login", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -26,16 +26,26 @@ function Login() {
     if (response.ok) {
       console.log("Login successful:", data);
       
-      if (data.role === "student") {
-        navigate("/student-dashboard");
-      } else if (data.role === "professor") {
-        navigate("/professor-dashboard");
-      } else if (data.role === "secretariat") {
-        navigate("/secretariat-dashboard");
-      }
+       switch (data.role) { 
+          case "student":
+            navigate("/student-dashboard");
+            break;
+          case "professor":
+            navigate("/professor-dashboard");
+            break;
+          case "secretariat":
+            navigate("/secretariat-dashboard");
+            break;
+          default:
+            console.warn("Rol necunoscut:", data.role); // **Gestionare rol necunoscut**
+        }
     } else {
       alert(data.message || "Login failed. Please try again.");
     }
+  } catch (error) {
+    console.error("Error during login:", error); // **Gestionare erori la fetch**
+    alert("An error occurred. Please try again.");
+  }
   };
 
   return (
