@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from auth import login_user, LoginRequest
 from exam import adauga_examen, Examen
+from fastapi.middleware.cors import CORSMiddleware
 from planning import (
     create_exam_planning,
     get_all_exam_plannings,
@@ -14,6 +15,14 @@ from planning import (
 # Initializează FastAPI
 app = FastAPI()
 
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:5173"],  # Adresele frontend-ului care au permisiunea de a accesa backend-ul
+    allow_credentials=True,  # Permite trimiterea cookie-urilor sau a altor credențiale
+    allow_methods=["*"],  # Permite toate metodele HTTP (GET, POST, PUT, DELETE etc.)
+    allow_headers=["*"],  # Permite toate tipurile de header-uri
+)
+
 #LOGIN
 @app.post("/login")
 async def login(request: LoginRequest):
@@ -21,6 +30,8 @@ async def login(request: LoginRequest):
     Endpoint pentru autentificarea utilizatorilor.
     """
     return login_user(request)
+
+
 
 # ADD EXAMENE
 @app.post("/adauga_examen")
