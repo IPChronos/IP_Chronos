@@ -17,7 +17,7 @@ app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173"],  # Adresele frontend-ului care au permisiunea de a accesa backend-ul
+    allow_origins=["http://127.0.0.1:5173"],  # Adresele frontend-ului care au permisiunea de a accesa backend-ul
     allow_credentials=True,  # Permite trimiterea cookie-urilor sau a altor credențiale
     allow_methods=["*"],  # Permite toate metodele HTTP (GET, POST, PUT, DELETE etc.)
     allow_headers=["*"],  # Permite toate tipurile de header-uri
