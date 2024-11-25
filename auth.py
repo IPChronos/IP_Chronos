@@ -13,14 +13,27 @@ def login_user(request: LoginRequest):
     """
     supabase = connect_to_supabase()
 
-    response = supabase.table("utilizator").select("*").eq("email", request.email).execute()
+    # Selectăm utilizatorul după email
+    response = supabase.table("utilizator").select("*").eq("emailuser", request.email).execute()
     user = response.data[0] if response.data else None
 
+    # Verificăm dacă utilizatorul există
     if not user:
         raise HTTPException(status_code=404, detail="Utilizatorul nu a fost găsit.")
 
     stored_password = user["password"]
+
+    # Verificăm parola
     if not bcrypt.checkpw(request.password.encode("utf-8"), stored_password.encode("utf-8")):
         raise HTTPException(status_code=401, detail="Parola este invalidă.")
 
-    return {"message": "Autentificare reușită!", "user": {"email": user["email"]}}
+    # Returnăm un mesaj de succes și detaliile utilizatorului
+    return {
+        "message": "Autentificare reușită!",
+        "user": {
+            "id": user["iduser"],
+            "nume": user["numeuser"],
+            "email": user["emailuser"],
+        },
+    }
+
