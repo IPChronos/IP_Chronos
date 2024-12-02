@@ -25,20 +25,20 @@ function Login() {
 
     if (response.ok) {
       console.log("Login successful:", data);
+      switch (data.user.role) {
+        case "student":
+          navigate("/student-dashboard");
+          break;
+        case "profesor": // Denumirea din backend pentru profesor
+          navigate("/professor-dashboard");
+          break;
+        case "secretariat": // Denumirea din backend pentru secretariat
+          navigate("/secretariat-dashboard");
+          break;
+        default:
+          console.warn("Rol necunoscut:", data.role); // Gestionare rol necunoscut
+      }
       
-       switch (data.role) { 
-          case "student":
-            navigate("/student-dashboard");
-            break;
-          case "professor":
-            navigate("/professor-dashboard");
-            break;
-          case "secretariat":
-            navigate("/secretariat-dashboard");
-            break;
-          default:
-            console.warn("Rol necunoscut:", data.role); // **Gestionare rol necunoscut**
-        }
     } else {
       alert(data.message || "Login failed. Please try again.");
     }
