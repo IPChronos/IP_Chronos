@@ -191,25 +191,41 @@ function StudentDashboard() {
     }));
   };
 
-  const handleAddExam = (e) => {
+  const handleAddExam = async (e) => {
     e.preventDefault();
-
-    const newExam = {
-      id: Date.now(),
+    
+    const formattedExam = {
+      date: examData.date,
+      time: examData.time,
+      room: examData.room,
       subject: examData.subject,
       professor: examData.professor,
-      date: new Date(`${examData.date}T${examData.time}`),
-      room: examData.room,
     };
-
-    setScheduledExams([...scheduledExams, newExam]);
-    setExamData({
-      date: "",
-      time: "",
-      room: "",
-      subject: "",
-      professor: "",
-    });
+  
+    try {
+      const response = await fetch("http://127.0.0.1:8000/planning", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formattedExam),
+      });
+  
+      if (response.ok) {
+        alert("Exam added successfully!");
+        setExamData({
+          date: "",
+          time: "",
+          room: "",
+          subject: "",
+          professor: "",
+        });
+      } else {
+        alert("Failed to add exam. Please try again.");
+      }
+    } catch (error) {
+      console.error("Error adding exam:", error);
+    }
   };
 
   return (
