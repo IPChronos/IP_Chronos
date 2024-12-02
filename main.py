@@ -11,14 +11,21 @@ from planning import (
     ExamPlanning,
     ExamUpdate,
 )
+from fastapi.middleware.cors import CORSMiddleware
 
-# Initializează FastAPI
+# Configurează FastAPI
 app = FastAPI()
+
+# Configurare CORS Middleware
+origins = [
+    "http://127.0.0.1:5173",  # Adresa exactă a frontend-ului
+    "http://localhost:5173"   # Adresa localhost
+]
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://127.0.0.1:5173"],  # Adresele frontend-ului care au permisiunea de a accesa backend-ul
-    allow_credentials=True,  # Permite trimiterea cookie-urilor sau a altor credențiale
+    allow_origins=origins,  # Permite doar originile specificate
+    allow_credentials=True,  # Permite cookie-uri sau alte credențiale
     allow_methods=["*"],  # Permite toate metodele HTTP (GET, POST, PUT, DELETE etc.)
     allow_headers=["*"],  # Permite toate tipurile de header-uri
 )

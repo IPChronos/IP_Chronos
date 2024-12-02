@@ -1,6 +1,5 @@
 from fastapi import HTTPException
 from pydantic import BaseModel, EmailStr
-import bcrypt
 from supabase_connect import connect_to_supabase
 
 class LoginRequest(BaseModel):
@@ -9,7 +8,7 @@ class LoginRequest(BaseModel):
 
 def login_user(request: LoginRequest):
     """
-    Funcție pentru autentificarea unui utilizator.
+    Funcție pentru autentificarea unui utilizator fără criptarea parolei.
     """
     supabase = connect_to_supabase()
 
@@ -23,9 +22,30 @@ def login_user(request: LoginRequest):
 
     stored_password = user["password"]
 
-    # Verificăm parola
-    if not bcrypt.checkpw(request.password.encode("utf-8"), stored_password.encode("utf-8")):
+    # Comparam parola primită cu parola din baza de date
+    if request.password != stored_password:
         raise HTTPException(status_code=401, detail="Parola este invalidă.")
+    
+    role = None
+
+    # Căutăm utilizatorul în tabelul 'student'
+    student_response = supabase.table("student").select("*").eq("iduser", user["iduser"]).execute()
+    if student_response.data:
+        role = "student"
+
+    # Căutăm utilizatorul în tabelul 'profesor'
+    profesor_response = supabase.table("profesor").select("*").eq("iduser", user["iduser"]).execute()
+    if profesor_response.data:
+        role = "profesor"
+
+    # Căutăm utilizatorul în tabelul 'secretariat'
+    secretariat_response = supabase.table("secretariat").select("*").eq("iduser", user["iduser"]).execute()
+    if secretariat_response.data:
+        role = "secretariat"
+
+    # Dacă nu s-a găsit un rol, returnăm o eroare
+    if not role:
+        raise HTTPException(status_code=403, detail="Utilizatorul nu are un rol asociat.")
 
     # Returnăm un mesaj de succes și detaliile utilizatorului
     return {
@@ -34,6 +54,6 @@ def login_user(request: LoginRequest):
             "id": user["iduser"],
             "nume": user["numeuser"],
             "email": user["emailuser"],
+            "role": role,
         },
     }
-
