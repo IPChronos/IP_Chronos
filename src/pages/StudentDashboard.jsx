@@ -41,6 +41,9 @@ function StudentDashboard() {
     setExamDetails(examForDate || null);
   }, [selectedDate, scheduledExams]);
 
+  
+
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -188,6 +191,27 @@ function StudentDashboard() {
     }));
   };
 
+  const handleAddExam = (e) => {
+    e.preventDefault();
+
+    const newExam = {
+      id: Date.now(),
+      subject: examData.subject,
+      professor: examData.professor,
+      date: new Date(`${examData.date}T${examData.time}`),
+      room: examData.room,
+    };
+
+    setScheduledExams([...scheduledExams, newExam]);
+    setExamData({
+      date: "",
+      time: "",
+      room: "",
+      subject: "",
+      professor: "",
+    });
+  };
+
   return (
     <div className="flex min-h-screen bg-gray-100">
       {/* Sidebar */}
@@ -218,6 +242,16 @@ function StudentDashboard() {
           >
             Settings
           </li>
+
+          <li
+            onClick={() => setCurrentSection("AddExam")}
+            className={`pl-4 py-2 rounded cursor-pointer ${
+              currentSection === "AddExam" ? "bg-purple-600" : "bg-purple-800"
+            }`}
+          >
+            Add Exam
+          </li>
+
         </ul>
       </div>
 
@@ -440,6 +474,94 @@ function StudentDashboard() {
             </form>
           </div>
         )}
+
+{currentSection === "AddExam" && (
+          <div>
+            <h1 className="text-2xl font-bold mb-4">Add New Exam</h1>
+            <form
+              onSubmit={handleAddExam}
+              className="bg-white p-6 rounded shadow"
+            >
+              <div className="mb-4">
+                <label className="block mb-1 font-medium">Subject</label>
+                <input
+                  type="text"
+                  name="subject"
+                  value={examData.subject}
+                  onChange={(e) =>
+                    setExamData({ ...examData, subject: e.target.value })
+                  }
+                  className="w-full p-2 border rounded"
+                  required
+                />
+              </div>
+
+              <div className="mb-4">
+                <label className="block mb-1 font-medium">Professor</label>
+                <input
+                  type="text"
+                  name="professor"
+                  value={examData.professor}
+                  onChange={(e) =>
+                    setExamData({ ...examData, professor: e.target.value })
+                  }
+                  className="w-full p-2 border rounded"
+                  required
+                />
+              </div>
+
+              <div className="mb-4">
+                <label className="block mb-1 font-medium">Date</label>
+                <input
+                  type="date"
+                  name="date"
+                  value={examData.date}
+                  onChange={(e) =>
+                    setExamData({ ...examData, date: e.target.value })
+                  }
+                  className="w-full p-2 border rounded"
+                  required
+                />
+              </div>
+
+              <div className="mb-4">
+                <label className="block mb-1 font-medium">Time</label>
+                <input
+                  type="time"
+                  name="time"
+                  value={examData.time}
+                  onChange={(e) =>
+                    setExamData({ ...examData, time: e.target.value })
+                  }
+                  className="w-full p-2 border rounded"
+                  required
+                />
+              </div>
+
+              <div className="mb-4">
+                <label className="block mb-1 font-medium">Room</label>
+                <input
+                  type="text"
+                  name="room"
+                  value={examData.room}
+                  onChange={(e) =>
+                    setExamData({ ...examData, room: e.target.value })
+                  }
+                  className="w-full p-2 border rounded"
+                  required
+                />
+              </div>
+
+              <button
+                type="submit"
+                className="w-full bg-indigo-600 text-white p-2 rounded hover:bg-indigo-700"
+              >
+                Add Exam
+              </button>
+            </form>
+          </div>
+        )}
+
       </div>
     </div>
     
