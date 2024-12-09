@@ -12,6 +12,7 @@ from planning import (
     ExamUpdate,
 )
 from fastapi.middleware.cors import CORSMiddleware
+from register import register_user, RegisterRequest
 
 # Configurează FastAPI
 app = FastAPI()
@@ -38,7 +39,9 @@ async def login(request: LoginRequest):
     """
     return login_user(request)
 
-
+@app.post("/register")
+async def register(request: RegisterRequest):
+    return register_user(request)
 
 # ADD EXAMENE
 @app.post("/adauga_examen")
