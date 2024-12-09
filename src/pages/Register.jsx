@@ -1,23 +1,51 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom"; // Importă useNavigate
 
 function Register() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [role, setRole] = useState("student"); // Default role
+  const navigate = useNavigate(); // Inițializează useNavigate
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Name:", name, "Email:", email, "Password:", password, "Role:", role);
+  
+    try {
+      const response = await fetch("http://127.0.0.1:8000/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: name,
+          email: email,
+          password: password,
+          role: role,
+        }),
+      });
+  
+      console.log(name, email, password, role);
+      if (response.ok) {
+        console.log("User registered successfully");
+        navigate("/login"); // Navighează către pagina de login
+      } else {
+        const errorData = await response.json();
+        console.error("Error registering user:", errorData.error);
+        alert("Registration failed: " + errorData.error);
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      alert("An error occurred during registration.");
+    }
   };
 
   return (
-
-    
     <div className="min-h-screen bg-gradient-to-r from-green-400 via-teal-500 to-blue-600 flex items-center justify-center">
       <div className="w-full max-w-md p-8 bg-white rounded-2xl shadow-2xl transform transition-all hover:scale-105">
-      <h1 className="text-4xl font-bold text-center text-gray-900 mb-4">Chronos - Online Exam Planner</h1>
+        <h1 className="text-4xl font-bold text-center text-gray-900 mb-4">
+          Chronos - Online Exam Planner
+        </h1>
         <h2 className="text-3xl font-semibold text-center text-gray-800 mb-6">Register</h2>
         <form className="flex flex-col gap-6" onSubmit={handleSubmit}>
           <div>
