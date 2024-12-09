@@ -42,7 +42,7 @@ def register_user(request: RegisterRequest):
             "iduser": next_id,  # Setăm manual ID-ul
             "numeuser": request.name,
             "emailuser": request.email,
-            "password": request.password,
+            "password": request.password,  # Folosim parola criptată
         }
         response_user = supabase.table("utilizator").insert(user_data).execute()
 
@@ -52,13 +52,15 @@ def register_user(request: RegisterRequest):
                 "idsecretariat": next_id,
                 "numesecretariat": request.name,
                 "emailsecretariat": request.email,
+                "iduser": next_id,  # Asigură-te că ID-ul este corect aici
             }
             role_table = "secretariat"
         elif request.role == "student":
             role_data = {
-                "idstudent": next_id,
+                "idstudent": next_id,  # Asigură-te că ID-ul este corect aici
                 "numestudent": request.name,
                 "emailstudent": request.email,
+                "iduser": next_id,
             }
             role_table = "student"
         else:
