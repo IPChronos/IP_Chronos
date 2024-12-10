@@ -1,6 +1,13 @@
 from fastapi import HTTPException
 from pydantic import BaseModel, EmailStr
 from supabase_connect import connect_to_supabase
+from fastapi import Depends, HTTPException
+from fastapi.security import OAuth2PasswordBearer
+from jose import JWTError, jwt
+
+SECRET_KEY = "secret_key"
+ALGORITHM = "HS256"
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 class LoginRequest(BaseModel):
     email: EmailStr
