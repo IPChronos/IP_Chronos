@@ -4,3 +4,4 @@ bcrypt
 pydantic
 supabase-py
 python-dotenv
+python-jose
