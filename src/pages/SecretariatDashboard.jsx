@@ -24,75 +24,7 @@ const facultatiSiSpecializari = {
 
   "Facultatea de Științe ale Educației": ["Pedagogia Invatamantului Primar si Prescolar", "Psihologie"]
 };
-const disciplineFacultati = {
-  "Facultatea de Inginerie Electrică și Știința Calculatoarelor": {
-    "Calculatoare": {
-      "Anul I": [
-        "Algebră liniară, geometrie analitică și diferențială",
-        "Analiză matematică",
-        "Proiectare logică",
-        "Grafică asistată de calculator",
-        "Programarea calculatoarelor și limbaje de programare 1",
-        "Comunicare",
-        "Limba engleză 1",
-        "Educație fizică și sport 1",
-        "Matematici speciale",
-        "Fizică 1",
-        "Programarea calculatoarelor și limbaje de programare 2",
-        "Arhitectura sistemelor de calcul",
-        "Electrotehnică",
-        "Limba engleză 2",
-      ],
-      "Anul II": [
-        "Dispozitive electronice și electronică analogică 1",
-        "Programare orientată pe obiecte",
-        "Fizică 2",
-        "Tehnici de măsurare",
-        "Sisteme de operare",
-        "Rețele de calculatoare",
-        "Structuri de date și algoritmi",
-        "Programarea calculatoarelor și limbaje de programare 3",
-        "Dispozitive electronice și electronică analogică 2",
-        "Proiectare asistată de calculator",
-        "Practica de specialitate",
-        "Dispozitive logice programabile",
-        "Electronică digitală",
-        "Proiect la domeniu (60 ore)",
-      ],
-      "Anul III": [
-        "Structuri de date și algoritmi",
-        "Elemente de grafică pe calculator",
-        "Microcontrolere și aplicații",
-        "Sisteme de operare",
-        "Baze de date",
-        "Proiectarea aplicațiilor software – proiect",
-        "Ingineria software",
-        "Rețele de calculatoare avansate",
-        "Programarea aplicațiilor Web",
-        "Practica de specialitate",
-        "Limba engleză 3",
-        "Proiect la specializare – 60 ore",
-        "Baze de date – proiect",
-        "Prelucrarea numerică a semnalelor",
-      ],
-      "Anul IV": [
-        "Sisteme integrate",
-        "Sisteme de inteligență artificială și recunoaștere a formelor",
-        "Proiectarea sistemelor software",
-        "Rețele de comunicații",
-        "Sisteme de operare distribuite",
-        "Proiect la specializare",
-        "Etica și legislație profesională",
-        "Gestiunea proiectelor informatice",
-        "Proiectarea asistată de calculator",
-        "Practică la licență",
-        "Tehnici avansate de programare",
-        "Realitatea virtuală",
-        "Proiect de diplomă",
-      ],
-    },
-  },
-};
+
 
 
 function SecretariatDashboard() {
@@ -209,33 +141,52 @@ function SecretariatDashboard() {
 
   return (
     <div className="flex min-h-screen bg-gray-100">
-      {/* Sidebar */}
-      <div className="w-64 bg-gradient-to-b from-green-900 to-green-700 text-white">
-        <div className="p-4 text-2xl font-semibold">Chronos - Secretariat</div>
-        <ul className="mt-8 space-y-4">
-          <li
-            onClick={() => setCurrentSection("Home")}
-            className={`pl-4 py-2 rounded cursor-pointer ${currentSection === "Home" ? "bg-green-800" : "bg-green-600"
-              }`}
-          >
-            Home
-          </li>
-          <li
-            onClick={() => setCurrentSection("Exams")}
-            className={`pl-4 py-2 rounded cursor-pointer ${currentSection === "Exams" ? "bg-green-800" : "bg-green-600"
-              }`}
-          >
-            View Exams
-          </li>
-          <li
-            onClick={() => setCurrentSection("AddExam")}
-            className={`pl-4 py-2 rounded cursor-pointer ${currentSection === "AddExam" ? "bg-green-800" : "bg-green-600"
-              }`}
-          >
-            Add Exam
-          </li>
-        </ul>
-      </div>
+     {/* Sidebar */}
+     
+<div className="w-64 bg-gradient-to-b from-green-900 to-green-700 text-white flex flex-col justify-between min-h-screen">
+  <div>
+    <div className="p-4 text-2xl font-semibold">Chronos - Secretariat</div>
+    <ul className="mt-8 space-y-4">
+      <li
+        onClick={() => setCurrentSection("Home")}
+        className={`pl-4 py-2 rounded cursor-pointer ${
+          currentSection === "Home" ? "bg-green-800" : "bg-green-600"
+        }`}
+      >
+        Home
+      </li>
+      <li
+        onClick={() => setCurrentSection("Exams")}
+        className={`pl-4 py-2 rounded cursor-pointer ${
+          currentSection === "Exams" ? "bg-green-800" : "bg-green-600"
+        }`}
+      >
+        View Exams
+      </li>
+      <li
+        onClick={() => setCurrentSection("AddExam")}
+        className={`pl-4 py-2 rounded cursor-pointer ${
+          currentSection === "AddExam" ? "bg-green-800" : "bg-green-600"
+        }`}
+      >
+        Add Exam
+      </li>
+    </ul>
+  </div>
+
+  {/* Buton Deconectați-vă */}
+  <div className="p-4">
+    <button
+      onClick={() => {
+        alert("V-ați deconectat!");
+        // Adaugă aici logica de logout (ex: redirecționare sau ștergerea sesiunii)
+      }}
+      className="w-full px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition duration-300"
+    >
+      Deconectați-vă
+    </button>
+  </div>
+</div>
 
       {/* Content */}
       <div className="flex-1 p-6">
