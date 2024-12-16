@@ -1,9 +1,13 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import Calendar from "react-calendar"; // Importăm librăria react-calendar
 import "react-calendar/dist/Calendar.css"; // Importăm stilurile pentru calendar
 
 function StudentDashboard() {
   const [currentSection, setCurrentSection] = useState("Home"); // Control pentru navigare
+  const [scheduledExams, setScheduledExams] = useState([]);
+  const [selectedDate, setSelectedDate] = useState(new Date()); // Data selectată în calendar
+  const [examDetails, setExamDetails] = useState(null); // Detalii despre examen
   const [examData, setExamData] = useState({
     date: "",
     time: "",
@@ -11,10 +15,8 @@ function StudentDashboard() {
     subject: "",
     professor: "",
   });
-  const [scheduledExams, setScheduledExams] = useState([]);
-  const [selectedDate, setSelectedDate] = useState(new Date()); // Data selectată în calendar
-  const [examDetails, setExamDetails] = useState(null); // Detalii despre examen
-
+  const navigate = useNavigate();
+  const userName = "Nume Prenume"; // Exemplu: numele utilizatorului logat
   // Preluarea examenelor aprobate
   useEffect(() => {
     const fetchExams = async () => {
@@ -180,7 +182,7 @@ function StudentDashboard() {
       [name]: type === "checkbox" ? checked : value,
     }));
   };
-
+  
   // Actualizează specializarea în funcție de facultatea selectată
   const handleFacultyChange = (e) => {
     const faculty = e.target.value;
@@ -227,48 +229,63 @@ function StudentDashboard() {
       console.error("Error adding exam:", error);
     }
   };
-
+    // Funcție de logout
+    const handleLogout = () => {
+      navigate("/login"); // Navigare spre pagina de login
+    };
   return (
     <div className="flex min-h-screen bg-gray-100">
       {/* Sidebar */}
-      <div className="w-64 bg-gradient-to-b from-purple-900 to-purple-700 text-gray">
-        <div className="p-4 text-2xl font-semibold">Chronos - Student</div>
-        <ul className="mt-8 space-y-4">
-          <li
-            onClick={() => setCurrentSection("Home")}
-            className={`pl-4 py-2 rounded cursor-pointer ${
-              currentSection === "Home" ? "bg-purple-600" : "bg-purple-800"
-            }`}
+      <div className="w-64 bg-gradient-to-b from-purple-900 to-purple-700 text-gray flex flex-col justify-between">
+        <div>
+          <div className="p-4 text-2xl font-semibold">Chronos - Student</div>
+          <div className="p-4 bg-purple-800 rounded mb-4">
+            <p className="text-sm">Bine ai venit,</p>
+            <p className="text-lg font-bold">{userName}</p>
+          </div>
+          <ul className="mt-8 space-y-4">
+            <li
+              onClick={() => setCurrentSection("Home")}
+              className={`pl-4 py-2 rounded cursor-pointer ${
+                currentSection === "Home" ? "bg-purple-600" : "bg-purple-800"
+              }`}
+            >
+              Home
+            </li>
+            <li
+              onClick={() => setCurrentSection("Exams")}
+              className={`pl-4 py-2 rounded cursor-pointer ${
+                currentSection === "Exams" ? "bg-purple-600" : "bg-purple-800"
+              }`}
+            >
+              Exams
+            </li>
+            <li
+              onClick={() => setCurrentSection("AddExam")}
+              className={`pl-4 py-2 rounded cursor-pointer ${
+                currentSection === "AddExam" ? "bg-purple-600" : "bg-purple-800"
+              }`}
+            >
+              Add Exam
+            </li>
+            <li
+              onClick={() => setCurrentSection("Settings")}
+              className={`pl-4 py-2 rounded cursor-pointer ${
+                currentSection === "Settings" ? "bg-purple-600" : "bg-purple-800"
+              }`}
+            >
+              Settings
+            </li>
+          </ul>
+        </div>
+        <div className="p-4">
+          <button
+            onClick={handleLogout}
+            className="w-full bg-red-600 text-white p-2 rounded hover:bg-red-700"
           >
-            Home
-          </li>
-          <li
-            onClick={() => setCurrentSection("Exams")}
-            className={`pl-4 py-2 rounded cursor-pointer ${
-              currentSection === "Exams" ? "bg-purple-600" : "bg-purple-800"
-            }`}
-          >
-            Exams
-          </li>
-          <li
-            onClick={() => setCurrentSection("Settings")}
-            className={`pl-4 py-2 rounded cursor-pointer ${
-              currentSection === "Settings" ? "bg-purple-600" : "bg-purple-800"
-            }`}
-          >
-            Settings
-          </li>
-
-          <li
-            onClick={() => setCurrentSection("AddExam")}
-            className={`pl-4 py-2 rounded cursor-pointer ${
-              currentSection === "AddExam" ? "bg-purple-600" : "bg-purple-800"
-            }`}
-          >
-            Add Exam
-          </li>
-
-        </ul>
+            Log Out
+          </button>
+        </div>
       </div>
 
       {/* Content */}
