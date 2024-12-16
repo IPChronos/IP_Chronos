@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+
 
 const facultatiSiSpecializari = {
   "Facultatea de Inginerie Electrică și Știința Calculatoarelor": ["Calculatoare", "Calculatoare – DUAL", "Electronică Aplicată", "Rețele și software de telecomunicații", "Sisteme electrice", "Sisteme electrice – DUAL", "Energetică și tehnologii informatice", "Managementul energiei", "Automatică şi informatică aplicată", "Automatică şi informatică aplicată - DUAL", "Echipamente și sisteme de comandă și control pentru autovehicule", "Echipamente și sisteme medicale"
@@ -31,7 +33,7 @@ function SecretariatDashboard() {
   const [currentSection, setCurrentSection] = useState("Home"); // Control pentru navigare
   const [scheduledExams, setScheduledExams] = useState([]); // Lista examenelor
   const [filteredExams, setFilteredExams] = useState([]); // Examenele filtrate
-
+  const navigate = useNavigate();
   // State-uri pentru filtre
   const [groupFilter, setGroupFilter] = useState("");
   const [professorFilter, setProfessorFilter] = useState("");
@@ -138,6 +140,11 @@ function SecretariatDashboard() {
       console.error("Error adding exam:", error);
     }
   };
+  const handleLogout = () => {
+    // Logica de logout (de ex., eliminarea tokenului de autentificare)
+    navigate("/login"); // Redirecționează către pagina de log in
+  };
+
 
   return (
     <div className="flex min-h-screen bg-gray-100">
@@ -176,16 +183,14 @@ function SecretariatDashboard() {
 
   {/* Buton Deconectați-vă */}
   <div className="p-4">
-    <button
-      onClick={() => {
-        alert("V-ați deconectat!");
-        // Adaugă aici logica de logout (ex: redirecționare sau ștergerea sesiunii)
-      }}
-      className="w-full px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition duration-300"
-    >
-      Deconectați-vă
-    </button>
-  </div>
+          <button
+            onClick={handleLogout}
+            className="w-full bg-red-600 text-white p-2 rounded hover:bg-red-700"
+          >
+            Log Out
+          </button>
+        </div>
+
 </div>
 
       {/* Content */}
