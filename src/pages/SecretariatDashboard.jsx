@@ -1,5 +1,100 @@
 import React, { useState, useEffect } from "react";
 
+const facultatiSiSpecializari = {
+  "Facultatea de Inginerie Electrică și Știința Calculatoarelor": ["Calculatoare", "Calculatoare – DUAL", "Electronică Aplicată", "Rețele și software de telecomunicații", "Sisteme electrice", "Sisteme electrice – DUAL", "Energetică și tehnologii informatice", "Managementul energiei", "Automatică şi informatică aplicată", "Automatică şi informatică aplicată - DUAL", "Echipamente și sisteme de comandă și control pentru autovehicule", "Echipamente și sisteme medicale"
+  ],
+
+  "Facultatea de Drept și Științe Administrative": ["Economia comerțului, turismului și serviciilor", "Drept European si International", "Administrație Publică", "Poliție Locală"],
+
+  "Facultatea de Economie, Administraţie și Afaceri": ["Administrarea afacerilor", "Finanțe și bănci", "Contabilitate și informatică de gestiune", "Management", "Afaceri internaționale", "Informatică economică", "Economie generală și comunicare economică", "Asistență managerială și administrativă", "	Matematică  informatică"],
+
+  "Facultatea de Educație Fizică și Sport": ["Educaţie Fizică şi Sport", "Kinetoterapie și motricitate specială"],
+
+  "Facultatea de Inginerie Alimentară": ["Ingineria produselor alimentare", "Controlul şi expertiza produselor alimentare", "Protecția consumatorului și a mediului"],
+
+  "Facultatea de Inginerie Mecanică, Autovehicule și Robotică": ["Tehnologia Construcțiilor de Mașini", "Tehnologia Construcțiilor de Mașini – DUAL", "Mecatronică", "Robotică", "Inginerie Mecanică", "Inginerie Mecanică DUAL", "Autovehicule Rutiere"],
+
+  "Facultatea de Istorie și Geografie": ["Asistență socială", "Geografie", "Geografia turismului", "Istorie", "Relații internaționale și studii europene", "Resurse umane"],
+
+  "Facultatea de Litere și Științe ale Comunicării": ["Limba şi literatura română – Limbă şi literatură modernă", "Limba şi literatura engleză ", "Limba şi literatura franceză", "Limba şi literatura ucrainena", "Media digitala", "Comunicare și relații publice"],
+
+  "Facultatea de Medicină și Științe Biologice": ["Medicină", "Asistență medicală generală", "Balneofiziokinetoterapie și recuperare", "Biochimie", "Biologie", "Nutriție și dietetică", "Tehnică dentară"],
+
+  "Facultatea de Silvicultură": ["Silvicultură", "Ecologie si Protectia Mediului"],
+
+  "Facultatea de Științe ale Educației": ["Pedagogia Invatamantului Primar si Prescolar", "Psihologie"]
+};
+const disciplineFacultati = {
+  "Facultatea de Inginerie Electrică și Știința Calculatoarelor": {
+    "Calculatoare": {
+      "Anul I": [
+        "Algebră liniară, geometrie analitică și diferențială",
+        "Analiză matematică",
+        "Proiectare logică",
+        "Grafică asistată de calculator",
+        "Programarea calculatoarelor și limbaje de programare 1",
+        "Comunicare",
+        "Limba engleză 1",
+        "Educație fizică și sport 1",
+        "Matematici speciale",
+        "Fizică 1",
+        "Programarea calculatoarelor și limbaje de programare 2",
+        "Arhitectura sistemelor de calcul",
+        "Electrotehnică",
+        "Limba engleză 2",
+      ],
+      "Anul II": [
+        "Dispozitive electronice și electronică analogică 1",
+        "Programare orientată pe obiecte",
+        "Fizică 2",
+        "Tehnici de măsurare",
+        "Sisteme de operare",
+        "Rețele de calculatoare",
+        "Structuri de date și algoritmi",
+        "Programarea calculatoarelor și limbaje de programare 3",
+        "Dispozitive electronice și electronică analogică 2",
+        "Proiectare asistată de calculator",
+        "Practica de specialitate",
+        "Dispozitive logice programabile",
+        "Electronică digitală",
+        "Proiect la domeniu (60 ore)",
+      ],
+      "Anul III": [
+        "Structuri de date și algoritmi",
+        "Elemente de grafică pe calculator",
+        "Microcontrolere și aplicații",
+        "Sisteme de operare",
+        "Baze de date",
+        "Proiectarea aplicațiilor software – proiect",
+        "Ingineria software",
+        "Rețele de calculatoare avansate",
+        "Programarea aplicațiilor Web",
+        "Practica de specialitate",
+        "Limba engleză 3",
+        "Proiect la specializare – 60 ore",
+        "Baze de date – proiect",
+        "Prelucrarea numerică a semnalelor",
+      ],
+      "Anul IV": [
+        "Sisteme integrate",
+        "Sisteme de inteligență artificială și recunoaștere a formelor",
+        "Proiectarea sistemelor software",
+        "Rețele de comunicații",
+        "Sisteme de operare distribuite",
+        "Proiect la specializare",
+        "Etica și legislație profesională",
+        "Gestiunea proiectelor informatice",
+        "Proiectarea asistată de calculator",
+        "Practică la licență",
+        "Tehnici avansate de programare",
+        "Realitatea virtuală",
+        "Proiect de diplomă",
+      ],
+    },
+  },
+};
+
+
 function SecretariatDashboard() {
   const [currentSection, setCurrentSection] = useState("Home"); // Control pentru navigare
   const [scheduledExams, setScheduledExams] = useState([]); // Lista examenelor
@@ -18,7 +113,10 @@ function SecretariatDashboard() {
     date: "",
     room: "",
     time: "",
+    faculty: "", // Facultatea selectată
+    specialization: "", // Specialitatea selectată
   });
+
 
   // URL-ul backend-ului
   const backendUrl = "http://127.0.0.1:8000/planning";
@@ -117,25 +215,22 @@ function SecretariatDashboard() {
         <ul className="mt-8 space-y-4">
           <li
             onClick={() => setCurrentSection("Home")}
-            className={`pl-4 py-2 rounded cursor-pointer ${
-              currentSection === "Home" ? "bg-green-800" : "bg-green-600"
-            }`}
+            className={`pl-4 py-2 rounded cursor-pointer ${currentSection === "Home" ? "bg-green-800" : "bg-green-600"
+              }`}
           >
             Home
           </li>
           <li
             onClick={() => setCurrentSection("Exams")}
-            className={`pl-4 py-2 rounded cursor-pointer ${
-              currentSection === "Exams" ? "bg-green-800" : "bg-green-600"
-            }`}
+            className={`pl-4 py-2 rounded cursor-pointer ${currentSection === "Exams" ? "bg-green-800" : "bg-green-600"
+              }`}
           >
             View Exams
           </li>
           <li
             onClick={() => setCurrentSection("AddExam")}
-            className={`pl-4 py-2 rounded cursor-pointer ${
-              currentSection === "AddExam" ? "bg-green-800" : "bg-green-600"
-            }`}
+            className={`pl-4 py-2 rounded cursor-pointer ${currentSection === "AddExam" ? "bg-green-800" : "bg-green-600"
+              }`}
           >
             Add Exam
           </li>
@@ -146,11 +241,42 @@ function SecretariatDashboard() {
       <div className="flex-1 p-6">
         {currentSection === "Home" && (
           <div>
-            <h1 className="text-2xl font-bold mb-4">Welcome, Secretariat!</h1>
-            <p>
-              Aici poți vizualiza și administra examenele programate după grupă,
-              profesor sau sală.
-            </p>
+            <div className="bg-green-600 text-white p-6 rounded mb-6">
+              <h1 className="text-3xl font-bold">Bun venit la Chronos - Secretariat!</h1>
+              <p className="mt-2">
+                Administrează cu ușurință examenele programate și accesează informațiile de care ai nevoie.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Card 1: View Exams */}
+              <div className="bg-white shadow-md rounded p-6 hover:shadow-lg">
+                <h2 className="text-xl font-bold mb-2">Vizualizare Examene</h2>
+                <p className="text-gray-700">
+                  Accesează lista examenelor programate și folosește filtre pentru a găsi rapid ceea ce cauți.
+                </p>
+                <button
+                  onClick={() => setCurrentSection("Exams")}
+                  className="mt-4 px-4 py-2 bg-green-600 text-white rounded hover:bg-green-800"
+                >
+                  Vezi Examenele
+                </button>
+              </div>
+
+              {/* Card 2: Add Exam */}
+              <div className="bg-white shadow-md rounded p-6 hover:shadow-lg">
+                <h2 className="text-xl font-bold mb-2">Adaugă un Examen</h2>
+                <p className="text-gray-700">
+                  Programează un nou examen completând detalii precum grupă, profesor și sală.
+                </p>
+                <button
+                  onClick={() => setCurrentSection("AddExam")}
+                  className="mt-4 px-4 py-2 bg-green-600 text-white rounded hover:bg-green-800"
+                >
+                  Adaugă Examen
+                </button>
+              </div>
+            </div>
           </div>
         )}
 
@@ -208,12 +334,19 @@ function SecretariatDashboard() {
               </div>
             </div>
 
-            {/* Lista examene filtrate */}
             <div className="bg-white p-4 rounded shadow">
               {filteredExams.length > 0 ? (
                 <ul>
                   {filteredExams.map((exam) => (
                     <li key={exam.idexamen} className="mb-2 border-b pb-2">
+                      {/* Facultatea și Specializarea afișate primele */}
+                      <p>
+                        <strong>Facultate:</strong> {exam.idfacultate}
+                      </p>
+                      <p>
+                        <strong>Specializare:</strong> {exam.idspecializare}
+                      </p>
+                      {/* Restul informațiilor despre examen */}
                       <p>
                         <strong>Materie ID:</strong> {exam.idmaterie}
                       </p>
@@ -239,6 +372,7 @@ function SecretariatDashboard() {
                 <p>Nicio programare găsită pentru filtrele selectate.</p>
               )}
             </div>
+
           </div>
         )}
 
@@ -252,8 +386,64 @@ function SecretariatDashboard() {
                   handleAddExam();
                 }}
               >
+                {/* Facultate */}
                 <div className="mb-4">
-                  <label className="block mb-1 font-medium">Materie</label>
+                  <label className="block mb-1 font-medium">Facultate</label>
+                  <select
+                    value={newExam.faculty}
+                    onChange={(e) =>
+                      setNewExam({
+                        ...newExam,
+                        faculty: e.target.value,
+                        specialization: "",
+                        subject: "",
+                        year: "",
+                      })
+                    }
+                    className="w-full p-2 border rounded"
+                    required
+                  >
+                    <option value="">Selectează facultatea</option>
+                    {Object.keys(facultatiSiSpecializari).map((faculty) => (
+                      <option key={faculty} value={faculty}>
+                        {faculty}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* Specializare */}
+                <div className="mb-4">
+                  <label className="block mb-1 font-medium">Specializare</label>
+                  <select
+                    value={newExam.specialization}
+                    onChange={(e) =>
+                      setNewExam({
+                        ...newExam,
+                        specialization: e.target.value,
+                        subject: "",
+                        year: "",
+                      })
+                    }
+                    className="w-full p-2 border rounded"
+                    required
+                    disabled={!newExam.faculty}
+                  >
+                    <option value="">Selectează specializarea</option>
+                    {newExam.faculty &&
+                      facultatiSiSpecializari[newExam.faculty]?.map(
+                        (specialization) => (
+                          <option key={specialization} value={specialization}>
+                            {specialization}
+                          </option>
+                        )
+                      )}
+                  </select>
+                </div>
+
+                {/* Disciplină */}
+                <div className="mb-4">
+                  <label className="block mb-1 font-medium">Disciplină</label>
                   <input
                     type="text"
                     value={newExam.subject}
@@ -262,8 +452,27 @@ function SecretariatDashboard() {
                     }
                     className="w-full p-2 border rounded"
                     required
+                    disabled={!newExam.specialization}
                   />
                 </div>
+
+                {/* Anul - Input Manual */}
+                <div className="mb-4">
+                  <label className="block mb-1 font-medium">Anul</label>
+                  <input
+                    type="text"
+                    value={newExam.year}
+                    onChange={(e) =>
+                      setNewExam({ ...newExam, year: e.target.value })
+                    }
+                    className="w-full p-2 border rounded"
+                    placeholder="Introdu anul (ex: 1, 2, 3, 4)"
+                    required
+                    disabled={!newExam.subject}
+                  />
+                </div>
+
+                {/* Profesor */}
                 <div className="mb-4">
                   <label className="block mb-1 font-medium">Profesor</label>
                   <input
@@ -276,6 +485,8 @@ function SecretariatDashboard() {
                     required
                   />
                 </div>
+
+                {/* Grupă */}
                 <div className="mb-4">
                   <label className="block mb-1 font-medium">Grupă</label>
                   <input
@@ -288,6 +499,8 @@ function SecretariatDashboard() {
                     required
                   />
                 </div>
+
+                {/* Data */}
                 <div className="mb-4">
                   <label className="block mb-1 font-medium">Data</label>
                   <input
@@ -300,6 +513,8 @@ function SecretariatDashboard() {
                     required
                   />
                 </div>
+
+                {/* Sala */}
                 <div className="mb-4">
                   <label className="block mb-1 font-medium">Sala</label>
                   <input
@@ -312,6 +527,8 @@ function SecretariatDashboard() {
                     required
                   />
                 </div>
+
+                {/* Ora */}
                 <div className="mb-4">
                   <label className="block mb-1 font-medium">Ora</label>
                   <input
@@ -324,6 +541,7 @@ function SecretariatDashboard() {
                     required
                   />
                 </div>
+
                 <button
                   type="submit"
                   className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-800"
@@ -334,6 +552,8 @@ function SecretariatDashboard() {
             </div>
           </div>
         )}
+
+
       </div>
     </div>
   );
