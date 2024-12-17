@@ -38,26 +38,20 @@ from fastapi import HTTPException
 from fastapi.encoders import jsonable_encoder
 
 def create_exam_planning(planning: ExamPlanning):
-    # Creăm payload-ul și adăugăm câmpurile necesare
+    # Creăm payload-ul și adăugăm creatde și status
     planning_data = jsonable_encoder(planning)
-
-    # Adăugăm câmpurile automate
     planning_data['creatde'] = 10  # Setăm creatde la 10
     planning_data['status'] = 1    # Setăm status la 1
 
-    # Verificăm ce este trimis către Supabase (pentru debugging)
     print("Payload trimis către Supabase:", planning_data)  # Debug
 
     # Inserăm planificarea examenului în baza de date
     response = supabase.table("examen").insert(planning_data).execute()
-
-    # Verificăm răspunsul de la Supabase
-    if response.status_code == 200:
+    
+    if response.data:
         return {"message": "Planificare adăugată cu succes!", "examen": response.data}
     else:
-        # Răspuns de eroare pentru debugging
-        print("Eroare la adăugarea examenului:", response.error_message)
-        raise HTTPException(status_code=422, detail="Eroare la adăugarea planificării examenului.")
+        raise HTTPException(status_code=400, detail="Eroare la adăugarea planificării examenului.")
 
 
 
