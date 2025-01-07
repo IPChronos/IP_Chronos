@@ -1,4 +1,4 @@
-# Lama Dev School Management Dashboard
+# Chronos Exam Planner
 
 ## Getting Started
 
@@ -13,14 +13,12 @@ pnpm dev
 # or
 bun dev
 ```
-
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Database server:
+```bash
+npx prisma studio
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```
+Open [http://localhost:5555](http://localhost:5555/) with your browser to see the result.
 
-## Learn More
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Lama Dev Youtube Channel](https://youtube.com/lamadev) 
-- [Next.js](https://nextjs.org/learn)
