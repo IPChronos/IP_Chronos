@@ -183,15 +183,36 @@ const ExamListPage = async ({ searchParams }: { searchParams: { [key: string]: s
           case "teacherId":
             query.lesson.teacherId = value;
             break;
-            case "search":
-              // Apply search filter to both subject and class
-              query.lesson.subject = {
-                name: { contains: value, mode: "insensitive" },
-              };
-              query.lesson.class = {
-                name: { contains: value, mode: "insensitive" },
-              };
+          case "search":
+              // Apply search filter to subject, class, and teacher's name
+              query.OR = [
+                  {
+                      lesson: {
+                          subject: {
+                              name: { contains: value, mode: "insensitive" },
+                          },
+                      },
+                  },
+                  {
+                      lesson: {
+                          class: {
+                              name: { contains: value, mode: "insensitive" },
+                          },
+                      },
+                  },
+                  {
+                      lesson: {
+                          teacher: {
+                              OR: [
+                                  { name: { contains: value, mode: "insensitive" } },
+                                  { surname: { contains: value, mode: "insensitive" } },
+                              ],
+                          },
+                      },
+                  },
+              ];
               break;
+          
           default:
             break;
         }
@@ -237,9 +258,17 @@ const ExamListPage = async ({ searchParams }: { searchParams: { [key: string]: s
       },
       take: ITEM_PER_PAGE,
       skip: ITEM_PER_PAGE * (p - 1),
+      orderBy: {
+        lesson: {
+          teacher: {
+            name: "asc", // Sort by teacher's name in ascending order
+          },
+        },
+      },
     }),
     prisma.exam.count({ where: query }),
   ]);
+  
 
   const tableData = role === "student" ? examsWithJoinStatus : data;
   const paginatedExamsWithJoinStatus = role === "student" ? examsWithJoinStatus.slice((p - 1) * ITEM_PER_PAGE, p * ITEM_PER_PAGE) : data;
