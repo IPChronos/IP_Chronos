@@ -5,6 +5,8 @@ import {
   ClassSchema,
   SubjectSchema,
   StudentSchema,
+  TeacherScehma,
+  ExamSchema
 } from "./formValidationSchemas";
 import prisma from "./prisma";
 import { clerkClient } from "@clerk/nextjs/server";
