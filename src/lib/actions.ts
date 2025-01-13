@@ -3,10 +3,12 @@
 import { revalidatePath } from "next/cache";
 import {
   ClassSchema,
-  SubjectSchema,
+  ExamSchema,
+  LessonSchema,
   StudentSchema,
-  TeacherScehma,
-  ExamSchema
+  SubjectSchema,
+  TeacherSchema,
+  lessonSchema
 } from "./formValidationSchemas";
 import prisma from "./prisma";
 import { clerkClient } from "@clerk/nextjs/server";
@@ -136,10 +138,6 @@ export const deleteClass = async (
     return { success: false, error: true };
   }
 };
-
-  }
-};
-
 
 export const createTeacher = async (
   currentState: CurrentState,
@@ -400,6 +398,8 @@ export const deleteStudent = async (
     return { success: false, error: true };
   }
 };
+
+
 
 export const createExam = async (
   currentState: CurrentState,
@@ -672,3 +672,152 @@ export const joinExam = async (studentId: string, examId: number) => {
   }
 };
 
+export const createLesson = async (
+  currentState: CurrentState,
+  data: LessonSchema
+) => {
+  try {
+    // Ensure startTime is earlier than endTime
+    if (new Date(data.startTime) >= new Date(data.endTime)) {
+      return {
+        success: false,
+        error: true,
+        message: "The start time must be earlier than the end time.",
+      };
+    }
+
+    // Check if the teacher has overlapping lessons
+    const overlappingLesson = await prisma.lesson.findFirst({
+      where: {
+        teacherId: data.teacherId,
+        AND: [
+          { startTime: { lt: data.endTime } }, // Existing lesson starts before the new one ends
+          { endTime: { gt: data.startTime } }, // Existing lesson ends after the new one starts
+        ],
+      },
+    });
+
+    if (overlappingLesson) {
+      return {
+        success: false,
+        error: true,
+        message: `The teacher is already assigned to another lesson during the selected time.`,
+      };
+    }
+
+    // Create the lesson
+    await prisma.lesson.create({
+      data: {
+        name: data.name,
+        day: data.day,
+        startTime: data.startTime,
+        endTime: data.endTime,
+        subjectId: data.subjectId,
+        classId: data.classId,
+        teacherId: data.teacherId,
+      },
+    });
+
+    return { success: true, error: false };
+  } catch (err: any) {
+    console.error(err);
+
+    if (err.code === "P2002") {
+      return {
+        success: false,
+        error: true,
+        message: "A unique constraint was violated.",
+      };
+    }
+
+    return {
+      success: false,
+      error: true,
+      message: "An unexpected error occurred while creating the lesson.",
+    };
+  }
+};
+
+export const updateLesson = async (data: LessonSchema) => {
+  try {
+    // Ensure the lesson exists
+    const lessonExists = await prisma.lesson.findUnique({
+      where: { id: data.id },
+    });
+
+    if (!lessonExists) {
+      return {
+        success: false,
+        error: true,
+        message: "The lesson does not exist.",
+      };
+    }
+
+    // Ensure startTime is earlier than endTime
+    if (new Date(data.startTime) >= new Date(data.endTime)) {
+      return {
+        success: false,
+        error: true,
+        message: "The start time must be earlier than the end time.",
+      };
+    }
+
+    // Update the lesson
+    await prisma.lesson.update({
+      where: { id: data.id },
+      data: {
+        name: data.name,
+        day: data.day,
+        startTime: data.startTime,
+        endTime: data.endTime,
+        subjectId: data.subjectId,
+        classId: data.classId,
+        teacherId: data.teacherId,
+      },
+    });
+
+    return { success: true, error: false };
+  } catch (err: any) {
+    console.error(err);
+
+    if (err.code === "P2025") {
+      return {
+        success: false,
+        error: true,
+        message: "Record not found.",
+      };
+    }
+
+    return {
+      success: false,
+      error: true,
+      message: "An unexpected error occurred while updating the course.",
+    };
+  }
+};
+
+export const deleteLesson = async (id: number) => {
+  try {
+    await prisma.lesson.delete({
+      where: { id },
+    });
+
+    return { success: true, error: false };
+  } catch (err: any) {
+    console.error(err);
+
+    if (err.code === "P2025") {
+      return {
+        success: false,
+        error: true,
+        message: "The lesson does not exist.",
+      };
+    }
+
+    return {
+      success: false,
+      error: true,
+      message: "An unexpected error occurred while deleting the lesson.",
+    };
+  }
+};
