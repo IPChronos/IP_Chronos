@@ -399,3 +399,274 @@ export const deleteStudent = async (
   }
 };
 
+export const createExam = async (
+  currentState: CurrentState,
+  data: ExamSchema
+) => {
+  try {
+    // Ensure startDate is earlier than endDate
+    if (new Date(data.startTime) >= new Date(data.endTime)) {
+      return {
+        success: false,
+        error: true,
+        message: "The start date and time must be earlier than the end date and time.",
+      };
+    }
+
+    // Check if the room is available during the specified time
+    const overlappingExam = await prisma.exam.findFirst({
+      where: {
+        roomId: data.roomId,
+        AND: [
+          { startTime: { lt: data.endTime } }, // Existing exam starts before the new one ends
+          { endTime: { gt: data.startTime } }, // Existing exam ends after the new one starts
+        ],
+      },
+      include: {
+        lesson: {
+          include: {
+            teacher: true, // Include the teacher associated with the lesson
+          },
+        },
+      },
+    });
+
+    if (overlappingExam) {
+      // Format the start and end times as a readable string
+      const startDate = new Date(overlappingExam.startTime);
+      const endDate = new Date(overlappingExam.endTime);
+
+      const formattedStart = `${startDate.toLocaleDateString('en-US', {
+        weekday: 'short', day: 'numeric', month: 'short', year: 'numeric',
+      })}, ${startDate.toLocaleTimeString('en-US', {
+        hour: '2-digit', minute: '2-digit', hour12: true,
+      })}`;
+
+      const formattedEnd = `${endDate.toLocaleDateString('en-US', {
+        weekday: 'short', day: 'numeric', month: 'short', year: 'numeric',
+      })}, ${endDate.toLocaleTimeString('en-US', {
+        hour: '2-digit', minute: '2-digit', hour12: true,
+      })}`;
+
+      return {
+        success: false,
+        error: true,
+        message: `The room is already occupied during the selected time range by Professor ${overlappingExam.lesson.teacher.name} from ${formattedStart} to ${formattedEnd}.`,
+      };
+    }
+
+    // Check if the lesson exists
+    const lessonExists = await prisma.lesson.findUnique({
+      where: { id: data.lessonId },
+    });
+
+    if (!lessonExists) {
+      return {
+        success: false,
+        error: true,
+        message: "The selected lesson does not exist.",
+      };
+    }
+
+    // Create the exam
+    await prisma.exam.create({
+      data: {
+        title: data.title,
+        startTime: data.startTime,
+        endTime: data.endTime,
+        lessonId: data.lessonId,
+        roomId: data.roomId,
+      },
+    });
+
+    return { success: true, error: false };
+  } catch (err: any) {
+    console.error(err);
+
+    // Identify specific Prisma errors
+    if (err.code === "P2002") {
+      return {
+        success: false,
+        error: true,
+        message: "A unique constraint was violated.",
+      };
+    }
+
+    if (err.code === "P2025") {
+      return {
+        success: false,
+        error: true,
+        message: "Record not found.",
+      };
+    }
+
+    // Generic error message
+    return {
+      success: false,
+      error: true,
+      message: "An unexpected error occurred while creating the exam.",
+    };
+  }
+};
+
+
+
+export const updateExam = async (data: ExamSchema) => {
+  try {
+    // Check if the exam exists and other logic here
+
+    // If everything is fine, update the exam
+    await prisma.exam.update({
+      where: { id: data.id },
+      data: {
+        title: data.title,
+        startTime: data.startTime,
+        endTime: data.endTime,
+        lessonId: data.lessonId,
+        roomId: data.roomId,
+      },
+    });
+
+    return { success: true, error: false }; // Return the correct structure
+  } catch (err: any) {
+    console.error(err);
+
+    // Handle specific Prisma errors or generic errors
+    if (err.code === "P2002") {
+      return { success: false, error: true, message: "A unique constraint was violated." };
+    }
+
+    if (err.code === "P2025") {
+      return { success: false, error: true, message: "Record not found." };
+    }
+
+    return { success: false, error: true, message: "An unexpected error occurred." }; // Return a generic error message
+  }
+};
+
+
+export const deleteExam = async (
+  currentState: CurrentState,
+  data: FormData
+) => {
+  const id = data.get("id") as string;
+
+  // const { userId, sessionClaims } = auth();
+  // const role = (sessionClaims?.metadata as { role?: string })?.role;
+
+  try {
+    await prisma.exam.delete({
+      where: {
+        id: parseInt(id),
+        // ...(role === "teacher" ? { lesson: { teacherId: userId! } } : {}),
+      },
+    });
+
+    // revalidatePath("/list/subjects");
+    return { success: true, error: false };
+  } catch (err) {
+    console.log(err);
+    return { success: false, error: true };
+  }
+};
+
+
+
+export const joinExam = async (studentId: string, examId: number) => {
+  try {
+    // Check if the student exists
+    const studentExists = await prisma.student.findUnique({
+      where: { id: studentId },
+    });
+
+    if (!studentExists) {
+      return {
+        success: false,
+        error: true,
+        message: "The student does not exist",
+      };
+    }
+
+    // Check if the exam exists and include room capacity
+    const examExists = await prisma.exam.findUnique({
+      where: { id: examId },
+      include: {
+        room: true,
+        joinedStudents: true,
+      },
+    });
+
+    if (!examExists) {
+      return {
+        success: false,
+        error: true,
+        message: "The exam does not exist",
+      };
+    }
+
+    // Check if the room is at capacity
+    if (examExists.room && examExists.joinedStudents.length >= examExists.room.capacity) {
+      return {
+        success: false,
+        error: true,
+        message: `The room for this exam is at full capacity (${examExists.room.capacity} students).`,
+      };
+    }
+
+    // Check if the student has already joined this exam
+    const isStudentAlreadyJoined = examExists.joinedStudents.some(
+      (student) => student.id === studentId
+    );
+
+    if (isStudentAlreadyJoined) {
+      return {
+        success: false,
+        error: true,
+        message: `You have already joined this exam: ${examExists.title}`,
+      };
+    }
+
+    // Update the relationship to add the student to the exam
+    await prisma.exam.update({
+      where: { id: examId },
+      data: {
+        joinedStudents: {
+          connect: { id: studentId },
+        },
+      },
+    });
+
+    return {
+      success: true,
+      error: false,
+      message: `Great! You have successfully joined the exam: ${examExists.title}`,
+    };
+  } catch (err: any) {
+    console.error(err);
+
+    // Identify specific Prisma errors
+    if (err.code === "P2002") {
+      return {
+        success: false,
+        error: true,
+        message: "A unique constraint was violated",
+      };
+    }
+
+    if (err.code === "P2025") {
+      return {
+        success: false,
+        error: true,
+        message: "Record not found",
+      };
+    }
+
+    // Generic error message
+    return {
+      success: false,
+      error: true,
+      message: "An unexpected error occurred while joining the exam",
+    };
+  }
+};
+
