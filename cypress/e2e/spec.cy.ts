@@ -27,8 +27,8 @@ describe("Exam Creation", () => {
 
     // Fill out the exam form
     cy.get('input[name="title"]').type('Math Exam'); // Enter exam title
-    cy.get('input[name="startTime"]').type('2025-02-01T09:00'); // Set start time
-    cy.get('input[name="endTime"]').type('2025-02-01T11:00'); // Set end time
+    cy.get('input[name="startTime"]').type('2025-02-01T02:00'); // Set start time
+    cy.get('input[name="endTime"]').type('2025-02-01T03:00'); // Set end time
     cy.get('select[name="lessonId"]').select('1'); // Choose a course
     cy.get('select[name="roomId"]').select('1'); // Choose a room
 

@@ -94,7 +94,6 @@ export const studentSchema = z.object({
   email: z
     .string()
     .email({ message: "Invalid email address!" })
-    .optional()
     .or(z.literal("")),
   phone: z.string().optional(),
   faculty: z.string(),

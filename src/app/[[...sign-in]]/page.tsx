@@ -31,6 +31,7 @@ const LoginPage = () => {
             <Image src="/logo.png" alt="" width={24} height={24} />
             Uni
           </h1>
+          
           <h2 className="text-gray-400">Sign in to your account</h2>
           <Clerk.GlobalError className="text-sm text-red-400" />
           <Clerk.Field name="identifier" className="flex flex-col gap-2">

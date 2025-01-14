@@ -138,27 +138,35 @@ export const deleteClass = async (
     return { success: false, error: true };
   }
 };
-
 export const createTeacher = async (
   currentState: CurrentState,
   data: TeacherSchema
 ) => {
   try {
-    // Check for duplicates in the database
+    // Check if the email or phone already exists for the teacher
+    const existingTeacherByEmail = await prisma.teacher.findUnique({
+      where: { email: data.email || "" }, // Default to empty string in case email is undefined
+    });
+
+    if (existingTeacherByEmail) {
+      return { success: false, error: true, message: "This email is already registered." };
+    }
+
+    const existingTeacherByPhone = await prisma.teacher.findUnique({
+      where: { phone: data.phone || "" }, // Default to empty string in case phone is undefined
+    });
+
+    if (existingTeacherByPhone) {
+      return { success: false, error: true, message: "This phone number is already registered." };
+    }
+
+    // Check for duplicate username
     const existingTeacherByUsername = await prisma.teacher.findUnique({
       where: { username: data.username },
     });
 
     if (existingTeacherByUsername) {
       return { success: false, error: true, message: "Username already taken." };
-    }
-
-    const existingTeacherByEmail = await prisma.teacher.findUnique({
-      where: { email: data.email || "" }, // Default to empty string in case email is undefined
-    });
-
-    if (existingTeacherByEmail) {
-      return { success: false, error: true, message: "Email already taken." };
     }
 
     // Create a new user in Clerk
@@ -178,7 +186,7 @@ export const createTeacher = async (
         username: data.username,
         name: data.name,
         surname: data.surname,
-        email: data.email || null,
+        email: data.email,
         phone: data.phone || null,
         faculty: data.faculty,
         img: data.img || null,
@@ -194,12 +202,21 @@ export const createTeacher = async (
       },
     });
 
-    // revalidatePath("/list/teachers");
+    
     return { success: true, error: false };
-  } catch (err) {
-    console.error(err);
-    return { success: false, error: true };
+  } catch (err: any) {
+    console.error("Error during teacher creation:", err);
+
+    // Return a specific error message if available
+    if (err.errors && Array.isArray(err.errors)) {
+      const errorMessages = err.errors.map((error: any) => error.message).join(", ");
+      return { success: false, error: errorMessages };
+    }
+
+    // Generic fallback error
+    return { success: false, error: err.message || "An unknown error occurred." };
   }
+  
 };
 
 
@@ -280,6 +297,26 @@ export const createStudent = async (
   console.log("Input data:", data);
   try {
     const clerk = await clerkClient();
+
+    // Check if the email or phone already exists
+    const existingEmail = await prisma.student.findUnique({
+      where: { email: data.email },
+    });
+    const existingPhone = await prisma.student.findUnique({
+      where: { phone: data.phone },
+    });
+
+    // If email already exists, return an error
+    if (existingEmail) {
+      return { success: false, error: "This email is already registered." };
+    }
+
+    // If phone already exists, return an error
+    if (existingPhone) {
+      return { success: false, error: "This phone number is already registered." };
+    }
+
+    // Check if the class is full
     const classItem = await prisma.class.findUnique({
       where: { id: data.classId },
       include: { _count: { select: { students: true } } },
@@ -289,6 +326,7 @@ export const createStudent = async (
       return { success: false, error: "Class is at full capacity." };
     }
 
+    // Proceed with Clerk user creation
     const user = await clerk.users.createUser({
       username: data.username,
       password: data.password,
@@ -297,6 +335,7 @@ export const createStudent = async (
       publicMetadata: { role: "student" },
     });
 
+    // Create the student in the database
     await prisma.student.create({
       data: {
         id: user.id,
@@ -330,6 +369,7 @@ export const createStudent = async (
     return { success: false, error: err.message || "An unknown error occurred." };
   }
 };
+
 
 export const updateStudent = async (
   currentState: CurrentState,
@@ -512,12 +552,74 @@ export const createExam = async (
 };
 
 
-
 export const updateExam = async (data: ExamSchema) => {
   try {
-    // Check if the exam exists and other logic here
+    // Ensure startDate is earlier than endDate
+    if (new Date(data.startTime) >= new Date(data.endTime)) {
+      return {
+        success: false,
+        error: true,
+        message: "The start date and time must be earlier than the end date and time.",
+      };
+    }
 
-    // If everything is fine, update the exam
+    // Check if the room is available during the specified time
+    const overlappingExam = await prisma.exam.findFirst({
+      where: {
+        roomId: data.roomId,
+        AND: [
+          { startTime: { lt: data.endTime } }, // Existing exam starts before the new one ends
+          { endTime: { gt: data.startTime } }, // Existing exam ends after the new one starts
+          { id: { not: data.id } }, // Exclude the current exam from the check
+        ],
+      },
+      include: {
+        lesson: {
+          include: {
+            teacher: true, // Include the teacher associated with the lesson
+          },
+        },
+      },
+    });
+
+    if (overlappingExam) {
+      // Format the start and end times as a readable string
+      const startDate = new Date(overlappingExam.startTime);
+      const endDate = new Date(overlappingExam.endTime);
+
+      const formattedStart = `${startDate.toLocaleDateString('en-US', {
+        weekday: 'short', day: 'numeric', month: 'short', year: 'numeric',
+      })}, ${startDate.toLocaleTimeString('en-US', {
+        hour: '2-digit', minute: '2-digit', hour12: true,
+      })}`;
+
+      const formattedEnd = `${endDate.toLocaleDateString('en-US', {
+        weekday: 'short', day: 'numeric', month: 'short', year: 'numeric',
+      })}, ${endDate.toLocaleTimeString('en-US', {
+        hour: '2-digit', minute: '2-digit', hour12: true,
+      })}`;
+
+      return {
+        success: false,
+        error: true,
+        message: `The room is already occupied during the selected time range by Professor ${overlappingExam.lesson.teacher.name} from ${formattedStart} to ${formattedEnd}.`,
+      };
+    }
+
+    // Check if the lesson exists
+    const lessonExists = await prisma.lesson.findUnique({
+      where: { id: data.lessonId },
+    });
+
+    if (!lessonExists) {
+      return {
+        success: false,
+        error: true,
+        message: "The selected lesson does not exist.",
+      };
+    }
+
+    // Update the exam
     await prisma.exam.update({
       where: { id: data.id },
       data: {
@@ -529,7 +631,7 @@ export const updateExam = async (data: ExamSchema) => {
       },
     });
 
-    return { success: true, error: false }; // Return the correct structure
+    return { success: true, error: false }; // Return success
   } catch (err: any) {
     console.error(err);
 
