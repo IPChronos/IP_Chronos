@@ -26,6 +26,7 @@ const TeacherForm = ({
   const {
     register,
     handleSubmit,
+    setError,
     formState: { errors },
   } = useForm<TeacherSchema>({
     resolver: zodResolver(teacherSchema),
@@ -41,11 +42,24 @@ const TeacherForm = ({
     }
   );
 
-  const onSubmit = handleSubmit((data) => {
-    console.log("hello");
-    console.log("Form data submitted:", data);
-    console.log(data);
-    formAction({ ...data, img: img?.secure_url });
+
+  const onSubmit = handleSubmit(async (data) => {
+    try {
+      console.log("Submitting form data:", data);
+      await formAction({ ...data, img: img?.secure_url });
+    } catch (error: any) {
+      // Check for Prisma unique constraint errors and set friendly error messages
+      const errorMessage = error.message;
+  
+      if (errorMessage.includes("Unique constraint failed on the fields: (`email`)")) {
+        setError("email", { message: "This email is already registered." });
+      } else if (errorMessage.includes("Unique constraint failed on the fields: (`phone`)")) {
+        setError("phone", { message: "This phone number is already registered." });
+      } else 
+        // Fallback for unexpected errors
+        toast.error("Something went wrong. Please try again.");
+      
+    }
   });
 
   const router = useRouter();
@@ -214,7 +228,7 @@ const TeacherForm = ({
         </CldUploadWidget>
       </div>
       {state.error && (
-        <span className="text-red-500">Something went wrong!</span>
+        <span className="text-red-500">Something went wrong! The teacher cannot be created!</span>
       )}
       <button className="bg-blue-400 text-white p-2 rounded-md">
         {type === "create" ? "Create" : "Update"}

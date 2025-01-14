@@ -36,6 +36,7 @@ const StudentForm = ({
   const {
     register,
     handleSubmit,
+    setError,
     formState: { errors },
   } = useForm<StudentSchema>({
     resolver: zodResolver(studentSchema),
@@ -51,11 +52,29 @@ const StudentForm = ({
     }
   );
 
-  const onSubmit = handleSubmit((data) => {
-    console.log("hello");
-    console.log(data);
-    formAction({ ...data, img: img?.secure_url });
+  const onSubmit = handleSubmit(async (data) => {
+    try {
+      console.log("Submitting form data:", data);
+      await formAction({ ...data, img: img?.secure_url });
+    } catch (error: any) {
+      // Check for Prisma unique constraint errors and set friendly error messages
+      const errorMessage = error.message;
+  
+      if (errorMessage.includes("Unique constraint failed on the fields: (`email`)")) {
+        setError("email", { message: "This email is already registered." });
+      } else if (errorMessage.includes("Unique constraint failed on the fields: (`phone`)")) {
+        setError("phone", { message: "This phone number is already registered." });
+      } else if (errorMessage.includes("Unique constraint failed on the fields: (`classId`)")) {
+        setError("classId", { message: "This class is already full." });
+      } else {
+        // Fallback for unexpected errors
+        toast.error("Something went wrong. Please try again.");
+      }
+    }
   });
+  
+  
+  
 
   const router = useRouter();
 
@@ -241,11 +260,19 @@ const StudentForm = ({
               )
             )}
           </select>
+            
           {errors.classId?.message && (
-            <p className="text-xs text-red-400">
-              {errors.classId.message.toString()}
-            </p>
-          )}
+  <p className="text-xs text-red-400">
+    {errors.classId.message.toString().includes("(`phone`)")
+      ? "This phone number is already registered."
+      : errors.classId.message.toString().includes("(`email`)")
+      ? "This email is already registered."
+      : "An error occurred. Please try again."}
+  </p>
+)}
+
+
+
         </div>
       </div>
       {state.error && (
